@@ -1,0 +1,34 @@
+# Dependencies
+node_modules/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+venv/
+.venv/
+env/
+
+# Build Outputs
+dist/
+build/
+target/
+.vite/
+
+# Local & OS Files
+.DS_Store
+Thumbs.db
+*.local
+.idea/
+.vscode/
+
+# Local runtime snapshots
+frontend/public/system-snapshot.json
+
+# Heavy Model Weights & Binary Resources (Keep configs & scripts only)
+*.onnx
+*.gguf
+*.bin
+*.safetensors
+*.pt
+*.pth

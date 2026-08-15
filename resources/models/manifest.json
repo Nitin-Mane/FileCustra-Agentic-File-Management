@@ -1,0 +1,46 @@
+{
+  "system_version": "0.1.0",
+  "offline_privacy_mode": "ENFORCED",
+  "resources_path": "D:\\fullstack_ai_project\\FileCustra_Agentic_File_Management\\resources\\models",
+  "models": [
+    {
+      "id": "magika-v1",
+      "name": "Google Magika Deep Learning Classifier",
+      "version": "1.0.3",
+      "category": "CLASSIFICATION",
+      "quantization": "ONNX_INT8",
+      "file_name": "magika_model.onnx",
+      "relative_path": "resources/models/magika/magika_model.onnx",
+      "size_bytes": 15728640,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "status": "LOCAL_READY",
+      "license": "Apache-2.0"
+    },
+    {
+      "id": "embedding-gemma-300m",
+      "name": "EmbeddingGemma 300M Dense Vector Engine",
+      "version": "1.0.0",
+      "category": "EMBEDDING",
+      "quantization": "Q8_0",
+      "file_name": "embedding_gemma.onnx",
+      "relative_path": "resources/models/embedding_gemma/embedding_gemma.onnx",
+      "size_bytes": 335544320,
+      "sha256": "8f3480749a1d48c8942b00b73c242ef998246f901170d62a348b61e25e985834",
+      "status": "LOCAL_READY",
+      "license": "Gemma-Terms"
+    },
+    {
+      "id": "gemma-4-e2b-it",
+      "name": "Gemma 4 E2B IT Quantized Reasoning Agent",
+      "version": "2.0.0",
+      "category": "REASONING",
+      "quantization": "Q4_K_M",
+      "file_name": "gemma-2b-it-q4_k_m.gguf",
+      "relative_path": "resources/models/gemma/gemma-2b-it-q4_k_m.gguf",
+      "size_bytes": 1986560000,
+      "sha256": "6b3a276008b8c5e62fdf40183ec9e7568c07e054238e8a69894e43e2e132924a",
+      "status": "LOCAL_READY",
+      "license": "Gemma-Terms"
+    }
+  ]
+}

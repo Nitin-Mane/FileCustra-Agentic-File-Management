@@ -1,0 +1,18 @@
+{
+  "model_name": "Google Magika Deep Learning Classifier",
+  "input_layer": "bytes_sequence",
+  "max_bytes_sample": 4096,
+  "confidence_threshold": 0.85,
+  "labels": [
+    "PDF Document",
+    "PNG Image",
+    "JPEG Image",
+    "Python Source Code",
+    "TypeScript Source Code",
+    "Rust Source Code",
+    "Excel Spreadsheet",
+    "Word Document",
+    "Zip Archive",
+    "Executable Binary"
+  ]
+}

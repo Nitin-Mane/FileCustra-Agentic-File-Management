@@ -1,0 +1,8 @@
+{
+  "model_name": "Gemma 4 E2B IT Quantized Reasoning Agent",
+  "quantization": "Q4_K_M",
+  "context_window": 8192,
+  "temperature": 0.2,
+  "top_p": 0.9,
+  "system_prompt": "You are FileCustra Agentic File Organizer. You analyze document metadata and proposed dry-run file movement topologies safely offline."
+}

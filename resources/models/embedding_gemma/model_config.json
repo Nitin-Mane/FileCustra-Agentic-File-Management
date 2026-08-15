@@ -1,0 +1,7 @@
+{
+  "model_name": "EmbeddingGemma 300M Dense Vector Engine",
+  "embedding_dim": 768,
+  "max_seq_length": 512,
+  "normalize_embeddings": true,
+  "distance_metric": "cosine"
+}
