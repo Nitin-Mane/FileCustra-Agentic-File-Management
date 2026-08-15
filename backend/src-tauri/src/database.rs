@@ -469,7 +469,7 @@ mod tests {
     fn test_database_creation() {
         let temp_dir = TempDir::new().unwrap();
         let db_path = temp_dir.path().join("test.db");
-        let db = DatabaseManager::new(&db_path).unwrap();
+        let _db = DatabaseManager::new(&db_path).unwrap();
         assert!(db_path.exists());
     }
 

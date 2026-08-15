@@ -135,15 +135,15 @@ def test_functional_execution():
     except Exception as e:
         print(f"  [FAIL] Magika Test Failed: {e}")
 
-    # 7. Test Google Antigravity SDK Bridge
+    # 7. Test FileCustra Native Local SDK Bridge
     try:
         sys.path.insert(0, str(PROJECT_ROOT / "backend" / "sidecar"))
-        from antigravity_sdk import AntigravityAgentBridge
-        bridge = AntigravityAgentBridge()
+        from antigravity_sdk import FileCustraNativeSDK
+        bridge = FileCustraNativeSDK()
         status = bridge.get_sdk_status()
-        print(f"  [OK] Google Antigravity SDK Bridge: Status {status['status']} ({status['sdk_name']} v{status['version']})")
+        print(f"  [OK] FileCustra Native Local SDK Bridge: Status {status['status']} ({status['sdk_name']} v{status['version']})")
     except Exception as e:
-        print(f"  [FAIL] Google Antigravity SDK Bridge Failed: {e}")
+        print(f"  [FAIL] FileCustra Native Local SDK Bridge Failed: {e}")
 
 def main():
     print_banner()

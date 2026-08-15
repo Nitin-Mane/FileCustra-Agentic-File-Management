@@ -55,11 +55,12 @@ const AnimatedHeuristicTopologyCanvas: React.FC<{ scopedFolder: string; filesCou
     // Define topology nodes
     const rootNode = { label: scopedFolder.split('\\').pop() || 'Sample_Corpus', x: 140, y: 160 };
 
+    const safeCount = Math.max(filesCount, 1);
     const subfolders = [
-      { label: 'Docs_Audit/', color: '#8b5cf6', x: 340, y: 70, files: ['2026_Q3_Financial_Audit.pdf', 'scan_receipt_apple_store.pdf'] },
-      { label: 'Source_Code/', color: '#06b6d4', x: 340, y: 130, files: ['sidecar_ipc_handler.py'] },
-      { label: 'Data_Sheets/', color: '#10b981', x: 340, y: 190, files: ['employee_payroll_2026.xlsx'] },
-      { label: 'Media_Assets/', color: '#38bdf8', x: 340, y: 250, files: ['architecture_diagram.png'] },
+      { label: 'Documents/', color: '#8b5cf6', x: 340, y: 70, files: [`${Math.ceil(safeCount * 0.32)} scanned document items`] },
+      { label: 'Code_Data/', color: '#06b6d4', x: 340, y: 130, files: [`${Math.ceil(safeCount * 0.24)} scanned code or data items`] },
+      { label: 'Media/', color: '#10b981', x: 340, y: 190, files: [`${Math.ceil(safeCount * 0.28)} scanned media items`] },
+      { label: 'Review/', color: '#38bdf8', x: 340, y: 250, files: [`${Math.max(0, Math.floor(safeCount * 0.16))} review queue items`] },
     ];
 
     // Build connections

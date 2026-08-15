@@ -3,9 +3,8 @@ mod database;
 use serde::{Deserialize, Serialize};
 use sha2::{Digest, Sha256};
 use std::fs;
-use std::path::{Path, PathBuf};
+use std::path::{Component, Path, PathBuf};
 use std::process::Command as ProcessCommand;
-use std::sync::Mutex;
 use std::time::{Duration, UNIX_EPOCH};
 use walkdir::WalkDir;
 use xxhash_rust::xxh64::xxh64;
@@ -83,6 +82,35 @@ pub struct ScanResult {
     pub total_directories: usize,
     pub total_size_bytes: u64,
     pub errors: Vec<String>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct PlannedOperation {
+    pub id: String,
+    pub source_path: String,
+    pub target_path: String,
+    pub operation_type: String,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct ExecutedOperation {
+    pub id: String,
+    pub source_path: String,
+    pub target_path: String,
+    pub operation_type: String,
+    pub status: String,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct ExecutionJournal {
+    pub session_id: String,
+    pub root_path: String,
+    pub journal_path: String,
+    pub timestamp: u64,
+    pub operations: Vec<ExecutedOperation>,
 }
 
 pub struct FilesystemEngine {
@@ -291,6 +319,14 @@ impl FilesystemEngine {
                 Ok(entry) => {
                     let entry_path = entry.path();
 
+                    if entry.file_type().is_symlink() {
+                        errors.push(format!(
+                            "Symlink/junction skipped without following target: {}",
+                            entry_path.display()
+                        ));
+                        continue;
+                    }
+
                     if !self.scope.include_hidden {
                         if let Some(name) = entry_path.file_name() {
                             if name.to_string_lossy().starts_with('.') {
@@ -305,8 +341,17 @@ impl FilesystemEngine {
                             if metadata.is_directory {
                                 directories.push(metadata);
                             } else {
-                                total_size += metadata.size_bytes;
-                                files.push(metadata);
+                                let mut file_metadata = metadata;
+                                match self.hash_file_sha256(&path_str) {
+                                    Ok(hash) => file_metadata.hash_sha256 = Some(hash),
+                                    Err(e) => errors.push(format!("Hash SHA-256 error for {}: {}", path_str, e)),
+                                }
+                                match self.hash_file_xxh64(&path_str) {
+                                    Ok(hash) => file_metadata.hash_xxh64 = Some(hash),
+                                    Err(e) => errors.push(format!("Hash xxh64 error for {}: {}", path_str, e)),
+                                }
+                                total_size += file_metadata.size_bytes;
+                                files.push(file_metadata);
                             }
                         }
                         Err(e) => {
@@ -386,6 +431,205 @@ fn compute_file_hash(path: String, algorithm: Option<String>) -> Result<String, 
 fn compute_file_hashes(path: String) -> Result<FileMetadata, String> {
     let engine = FilesystemEngine::new(ScopeConfig::default());
     engine.compute_file_hashes(&path)
+}
+
+fn reject_parent_components(path: &Path) -> Result<(), String> {
+    for component in path.components() {
+        if matches!(component, Component::ParentDir | Component::Prefix(_) | Component::RootDir) {
+            return Err(format!(
+                "Target path must be relative to the selected workspace: {}",
+                path.display()
+            ));
+        }
+    }
+    Ok(())
+}
+
+fn unique_target_path(target: &Path) -> PathBuf {
+    if !target.exists() {
+        return target.to_path_buf();
+    }
+
+    let parent = target.parent().unwrap_or_else(|| Path::new(""));
+    let stem = target
+        .file_stem()
+        .and_then(|value| value.to_str())
+        .unwrap_or("file");
+    let extension = target.extension().and_then(|value| value.to_str());
+
+    for index in 1..10_000 {
+        let file_name = match extension {
+            Some(ext) if !ext.is_empty() => format!("{}_{}.{}", stem, index, ext),
+            _ => format!("{}_{}", stem, index),
+        };
+        let candidate = parent.join(file_name);
+        if !candidate.exists() {
+            return candidate;
+        }
+    }
+
+    target.to_path_buf()
+}
+
+fn unix_timestamp() -> u64 {
+    std::time::SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .unwrap_or(Duration::ZERO)
+        .as_secs()
+}
+
+fn journal_session_id() -> String {
+    let millis = std::time::SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .unwrap_or(Duration::ZERO)
+        .as_millis();
+    format!("sess-{}", millis)
+}
+
+#[tauri::command]
+fn execute_operation_plan(
+    root_path: String,
+    operations: Vec<PlannedOperation>,
+) -> Result<ExecutionJournal, String> {
+    let engine = FilesystemEngine::new(ScopeConfig::default());
+    let root = engine.validate_path(&root_path)?;
+
+    if operations.is_empty() {
+        return Err("No operations were supplied for execution".to_string());
+    }
+
+    let session_id = journal_session_id();
+    let mut executed = Vec::new();
+
+    for operation in operations {
+        if operation.operation_type != "MOVE" {
+            return Err(format!(
+                "Unsupported operation type for real execution: {}",
+                operation.operation_type
+            ));
+        }
+
+        let source = engine.validate_path(&operation.source_path)?;
+        if !source.starts_with(&root) {
+            return Err(format!(
+                "Source file is outside the selected workspace: {}",
+                source.display()
+            ));
+        }
+
+        if !source.is_file() {
+            return Err(format!("Source is not a file: {}", source.display()));
+        }
+
+        let relative_target = Path::new(&operation.target_path);
+        reject_parent_components(relative_target)?;
+        let target = root.join(relative_target);
+        if !target.starts_with(&root) {
+            return Err(format!(
+                "Target path escaped the selected workspace: {}",
+                target.display()
+            ));
+        }
+
+        if let Some(parent) = target.parent() {
+            fs::create_dir_all(parent)
+                .map_err(|e| format!("Failed to create target directory {}: {}", parent.display(), e))?;
+        }
+
+        let final_target = unique_target_path(&target);
+        fs::rename(&source, &final_target).map_err(|e| {
+            format!(
+                "Failed to move {} to {}: {}",
+                source.display(),
+                final_target.display(),
+                e
+            )
+        })?;
+
+        executed.push(ExecutedOperation {
+            id: operation.id,
+            source_path: source.to_string_lossy().to_string(),
+            target_path: final_target.to_string_lossy().to_string(),
+            operation_type: operation.operation_type,
+            status: "COMPLETED".to_string(),
+        });
+    }
+
+    let journal_dir = root.join(".filecustra_journal");
+    fs::create_dir_all(&journal_dir).map_err(|e| {
+        format!(
+            "Failed to create rollback journal directory {}: {}",
+            journal_dir.display(),
+            e
+        )
+    })?;
+
+    let journal_path = journal_dir.join(format!("{}.json", session_id));
+    let journal = ExecutionJournal {
+        session_id,
+        root_path: root.to_string_lossy().to_string(),
+        journal_path: journal_path.to_string_lossy().to_string(),
+        timestamp: unix_timestamp(),
+        operations: executed,
+    };
+
+    let payload = serde_json::to_string_pretty(&journal)
+        .map_err(|e| format!("Failed to serialize rollback journal: {}", e))?;
+    fs::write(&journal_path, payload)
+        .map_err(|e| format!("Failed to write rollback journal {}: {}", journal_path.display(), e))?;
+
+    Ok(journal)
+}
+
+#[tauri::command]
+fn rollback_operation_journal(journal_path: String) -> Result<ExecutionJournal, String> {
+    let payload = fs::read_to_string(&journal_path)
+        .map_err(|e| format!("Failed to read rollback journal {}: {}", journal_path, e))?;
+    let mut journal: ExecutionJournal = serde_json::from_str(&payload)
+        .map_err(|e| format!("Failed to parse rollback journal: {}", e))?;
+
+    for operation in journal.operations.iter_mut().rev() {
+        if operation.status == "ROLLED_BACK" {
+            continue;
+        }
+
+        let current = Path::new(&operation.target_path);
+        let original = Path::new(&operation.source_path);
+
+        if !current.exists() {
+            operation.status = "MISSING_TARGET".to_string();
+            continue;
+        }
+
+        if let Some(parent) = original.parent() {
+            fs::create_dir_all(parent).map_err(|e| {
+                format!(
+                    "Failed to recreate original directory {}: {}",
+                    parent.display(),
+                    e
+                )
+            })?;
+        }
+
+        let final_original = unique_target_path(original);
+        fs::rename(current, &final_original).map_err(|e| {
+            format!(
+                "Failed to roll back {} to {}: {}",
+                current.display(),
+                final_original.display(),
+                e
+            )
+        })?;
+
+        operation.status = "ROLLED_BACK".to_string();
+    }
+
+    let updated_payload = serde_json::to_string_pretty(&journal)
+        .map_err(|e| format!("Failed to serialize updated rollback journal: {}", e))?;
+    fs::write(&journal_path, updated_payload)
+        .map_err(|e| format!("Failed to update rollback journal {}: {}", journal_path, e))?;
+
+    Ok(journal)
 }
 
 #[tauri::command]
@@ -564,6 +808,8 @@ pub fn run() {
             scan_directory,
             compute_file_hash,
             compute_file_hashes,
+            execute_operation_plan,
+            rollback_operation_journal,
             check_hardware_capabilities,
             generate_topology_report,
             check_runtime_readiness,
@@ -712,6 +958,53 @@ mod tests {
 
         assert!(engine.validate_path(&allowed_file.to_string_lossy()).is_ok());
         assert!(engine.validate_path(&blocked_file.to_string_lossy()).is_err());
+    }
+
+    #[test]
+    fn test_execute_operation_plan_moves_real_file_and_rolls_back() {
+        let temp_dir = TempDir::new().unwrap();
+        let source = create_test_file(temp_dir.path(), "report.txt", b"content");
+
+        let journal = execute_operation_plan(
+            temp_dir.path().to_string_lossy().to_string(),
+            vec![PlannedOperation {
+                id: "op-1".to_string(),
+                source_path: source.to_string_lossy().to_string(),
+                target_path: "Projects/Text/report.txt".to_string(),
+                operation_type: "MOVE".to_string(),
+            }],
+        )
+        .unwrap();
+
+        let moved = temp_dir.path().join("Projects").join("Text").join("report.txt");
+        assert!(!source.exists());
+        assert!(moved.exists());
+        assert!(Path::new(&journal.journal_path).exists());
+        assert_eq!(journal.operations[0].status, "COMPLETED");
+
+        let rolled_back = rollback_operation_journal(journal.journal_path).unwrap();
+        assert!(source.exists());
+        assert!(!moved.exists());
+        assert_eq!(rolled_back.operations[0].status, "ROLLED_BACK");
+    }
+
+    #[test]
+    fn test_execute_operation_plan_rejects_target_traversal() {
+        let temp_dir = TempDir::new().unwrap();
+        let source = create_test_file(temp_dir.path(), "report.txt", b"content");
+
+        let result = execute_operation_plan(
+            temp_dir.path().to_string_lossy().to_string(),
+            vec![PlannedOperation {
+                id: "op-1".to_string(),
+                source_path: source.to_string_lossy().to_string(),
+                target_path: "../outside/report.txt".to_string(),
+                operation_type: "MOVE".to_string(),
+            }],
+        );
+
+        assert!(result.is_err());
+        assert!(source.exists());
     }
 
     #[test]

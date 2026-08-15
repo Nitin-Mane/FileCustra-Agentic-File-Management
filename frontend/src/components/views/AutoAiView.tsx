@@ -14,8 +14,8 @@ export const AutoAiView: React.FC<AutoAiViewProps> = ({ onGeneratePlan }) => {
       name: 'Project & Domain Based',
       icon: FolderTree,
       color: 'var(--accent-cyan)',
-      description: 'Groups files into clear project domain folders (e.g. Finance, Engineering, Research, Marketing) based on content semantics.',
-      example: 'Documents/Projects/2026_Q3_Financial_Audit/invoice_01.pdf',
+      description: 'Groups files into clear project or domain folders using available scan metadata and user-approved rules.',
+      example: 'Projects/<domain>/<original-file-name>',
     },
     {
       id: 'CHRONOLOGICAL',
@@ -23,32 +23,32 @@ export const AutoAiView: React.FC<AutoAiViewProps> = ({ onGeneratePlan }) => {
       icon: Calendar,
       color: 'var(--accent-violet)',
       description: 'Organizes files by creation or modification timeline into structured Year / Month / Quarter hierarchies.',
-      example: 'Archives/2026/08_August/2026-08-14_Research_Report.pdf',
+      example: 'Archives/<year>/<month>/<original-file-name>',
     },
     {
       id: 'TYPE_FORMAT',
       name: 'File Type & Extension',
       icon: FileType,
       color: 'var(--status-safe)',
-      description: 'Sorts files deterministically into verified Magika MIME format categories (PDFs, Source Code, Spreadsheets, Media).',
-      example: 'Media/Images/PNG/diagram_architecture.png',
+      description: 'Sorts files deterministically into verified extension or content-type categories when model readiness allows it.',
+      example: 'Library/<format>/<original-file-name>',
     },
     {
       id: 'SEMANTIC_CLUSTER',
-      name: 'EmbeddingGemma Semantic Cluster',
+      name: 'Semantic Cluster Ready',
       icon: Network,
       color: 'var(--accent-blue)',
-      description: 'Uses 300M vector embeddings and cosine similarity clustering to group topically related content across formats.',
-      example: 'Clusters/Tax_Returns_&_Receipts/receipt_apple_2026.pdf',
+      description: 'Uses semantic embeddings only after the local model is installed and verified; otherwise this remains heuristic.',
+      example: 'Clusters/<topic>/<original-file-name>',
     },
   ];
 
   return (
     <div className="view-container">
       <div style={{ marginBottom: 20 }}>
-        <h2 className="heading-lg">Auto AI Topology Planner (Gemma Agent Core)</h2>
+        <h2 className="heading-lg">Auto Topology Planner</h2>
         <p className="subheading">
-          Select an organizational topology. Local Gemma model evaluates file metadata and semantic vectors to propose a deterministic folder hierarchy.
+          Select an organizational topology. The active workspace flow uses real scan metadata first and only enables model-backed reasoning when runtime readiness confirms it.
         </p>
       </div>
 

@@ -81,7 +81,7 @@ export const OperationPlanView: React.FC<OperationPlanViewProps> = ({
       <div className="glass-panel" style={{ overflow: 'hidden' }}>
         <div style={{ padding: '12px 16px', background: 'rgba(31, 41, 55, 0.6)', borderBottom: '1px solid var(--border-subtle)', fontWeight: 600, fontSize: 13, display: 'flex', justifyContent: 'space-between' }}>
           <span>Technical File Mutations ({steps.length} Operations Planned)</span>
-          <span style={{ color: 'var(--accent-cyan)', fontFamily: 'var(--font-mono)' }}>Collision Check: PASSED</span>
+          <span style={{ color: 'var(--accent-cyan)', fontFamily: 'var(--font-mono)' }}>Collision Check: Review Required</span>
         </div>
 
         <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: 13 }}>

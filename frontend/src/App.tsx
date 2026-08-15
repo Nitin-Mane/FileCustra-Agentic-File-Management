@@ -48,114 +48,11 @@ export const App: React.FC = () => {
   const [isExecuting, setIsExecuting] = useState<boolean>(false);
   const [selectedEngineMode, setSelectedEngineMode] = useState<'AUTONOMOUS' | 'GUIDED_INTERACTIVE'>('AUTONOMOUS');
 
-  const [files, setFiles] = useState<FileItem[]>([
-    {
-      id: 'f1',
-      name: '2026_Q3_Financial_Audit.pdf',
-      path: 'Unorganized/Docs/2026_Q3_Financial_Audit.pdf',
-      extension: 'pdf',
-      sizeBytes: 1542000,
-      mimeType: 'application/pdf',
-      magikaType: 'PDF Document',
-      ocrExtracted: true,
-      riskCategory: 'SAFE',
-      tags: ['finance', 'audit', '2026', 'tax'],
-    },
-    {
-      id: 'f2',
-      name: 'architecture_diagram.png',
-      path: 'Unorganized/Images/architecture_diagram.png',
-      extension: 'png',
-      sizeBytes: 890000,
-      mimeType: 'image/png',
-      magikaType: 'PNG Image',
-      ocrExtracted: false,
-      riskCategory: 'SAFE',
-      tags: ['diagram', 'tauri', 'rust'],
-    },
-    {
-      id: 'f3',
-      name: 'sidecar_ipc_handler.py',
-      path: 'Unorganized/Code/sidecar_ipc_handler.py',
-      extension: 'py',
-      sizeBytes: 14500,
-      mimeType: 'text/x-python',
-      magikaType: 'Python Source Code',
-      ocrExtracted: false,
-      riskCategory: 'SAFE',
-      tags: ['python', 'sidecar', 'json-rpc'],
-    },
-    {
-      id: 'f4',
-      name: 'employee_payroll_2026.xlsx',
-      path: 'Unorganized/Sheets/employee_payroll_2026.xlsx',
-      extension: 'xlsx',
-      sizeBytes: 340000,
-      mimeType: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-      magikaType: 'Excel Spreadsheet',
-      ocrExtracted: false,
-      riskCategory: 'SAFE',
-      tags: ['payroll', 'hr', '2026'],
-    },
-    {
-      id: 'f5',
-      name: 'scan_receipt_apple_store.pdf',
-      path: 'Unorganized/Scans/scan_receipt_apple_store.pdf',
-      extension: 'pdf',
-      sizeBytes: 2100000,
-      mimeType: 'application/pdf',
-      magikaType: 'Scanned PDF Document',
-      ocrExtracted: true,
-      riskCategory: 'SAFE',
-      tags: ['receipt', 'apple', 'hardware', 'ocr'],
-    },
-  ]);
+  const [files, setFiles] = useState<FileItem[]>([]);
 
-  const [operationSteps, setOperationSteps] = useState<OperationPlanStep[]>([
-    {
-      id: 'op1',
-      sourcePath: 'Unorganized/Docs/2026_Q3_Financial_Audit.pdf',
-      targetPath: 'Finance/Audits/2026/2026_Q3_Financial_Audit.pdf',
-      operationType: 'MOVE',
-      rationale: 'Gemma CoT Rationale: Grouped by semantic domain (Finance) and chronological year (2026)',
-      collisionStatus: 'NONE',
-    },
-    {
-      id: 'op2',
-      sourcePath: 'Unorganized/Images/architecture_diagram.png',
-      targetPath: 'Assets/Diagrams/architecture_diagram.png',
-      operationType: 'MOVE',
-      rationale: 'Gemma CoT Rationale: Categorized by Magika format (PNG) and tag (diagram)',
-      collisionStatus: 'NONE',
-    },
-    {
-      id: 'op3',
-      sourcePath: 'Unorganized/Code/sidecar_ipc_handler.py',
-      targetPath: 'Engineering/Sidecar/sidecar_ipc_handler.py',
-      operationType: 'MOVE',
-      rationale: 'Gemma CoT Rationale: Isolated into engineering module folder structure',
-      collisionStatus: 'NONE',
-    },
-    {
-      id: 'op4',
-      sourcePath: 'Unorganized/Sheets/employee_payroll_2026.xlsx',
-      targetPath: 'HR/Payroll/employee_payroll_2026.xlsx',
-      operationType: 'MOVE',
-      rationale: 'Gemma CoT Rationale: Grouped into HR domain hierarchy',
-      collisionStatus: 'NONE',
-    },
-  ]);
+  const [operationSteps, setOperationSteps] = useState<OperationPlanStep[]>([]);
 
-  const [journalEntries, setJournalEntries] = useState<OperationJournalEntry[]>([
-    {
-      id: 'j-20260814-01',
-      timestamp: '2026-08-14 22:15:00',
-      sessionId: 'sess-8812',
-      operationCount: 4,
-      status: 'COMPLETED',
-      steps: operationSteps,
-    },
-  ]);
+  const [journalEntries, setJournalEntries] = useState<OperationJournalEntry[]>([]);
 
   const [models, setModels] = useState<ModelEntry[]>([
     {
@@ -164,9 +61,9 @@ export const App: React.FC = () => {
       category: 'CLASSIFICATION',
       quantization: 'INT8',
       sizeGb: 0.05,
-      installed: true,
-      active: true,
-      benchmarkScore: 1200,
+      installed: false,
+      active: false,
+      benchmarkScore: 0,
     },
     {
       id: 'm2',
@@ -174,9 +71,9 @@ export const App: React.FC = () => {
       category: 'EMBEDDING',
       quantization: 'Q8_0',
       sizeGb: 0.32,
-      installed: true,
-      active: true,
-      benchmarkScore: 450,
+      installed: false,
+      active: false,
+      benchmarkScore: 0,
     },
     {
       id: 'm3',
@@ -184,9 +81,9 @@ export const App: React.FC = () => {
       category: 'REASONING',
       quantization: 'Q4_K_M',
       sizeGb: 1.85,
-      installed: true,
-      active: true,
-      benchmarkScore: 48,
+      installed: false,
+      active: false,
+      benchmarkScore: 0,
     },
   ]);
 

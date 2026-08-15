@@ -1,9 +1,9 @@
 /**
- * FileCustra Frontend Google Antigravity SDK Client Bridge
- * Interoperates with google.antigravity Agent leasing and JSON-RPC sidecar protocol.
+ * FileCustra Native Local SDK Client Bridge
+ * 100% offline, local-first, safe SDK services native to FileCustra.
  */
 
-export interface AntigravitySdkStatus {
+export interface FileCustraNativeSdkStatus {
   sdk_name: string;
   version: string;
   provider: string;
@@ -12,12 +12,12 @@ export interface AntigravitySdkStatus {
   system_instructions: string;
 }
 
-export const loadAntigravitySdkStatus = async (): Promise<AntigravitySdkStatus> => {
+export const loadFileCustraNativeSdkStatus = async (): Promise<FileCustraNativeSdkStatus> => {
   return {
-    sdk_name: "google.antigravity",
-    version: "0.0.4",
-    provider: "Google DeepMind Advanced Agentic Coding",
-    status: "ACTIVE_READY",
+    sdk_name: "filecustra.native_local_sdk",
+    version: "1.0.0",
+    provider: "FileCustra Offline Local Core Engine",
+    status: "OFFLINE_SAFE",
     capabilities: {
       file_classification: true,
       magika_routing: true,
@@ -26,6 +26,8 @@ export const loadAntigravitySdkStatus = async (): Promise<AntigravitySdkStatus> 
       write_ahead_journal: true,
       offline_privacy_lock: true,
     },
-    system_instructions: "FileCustra Agentic File Management Assistant",
+    system_instructions: "FileCustra Local Autonomous File Management Engine",
   };
 };
+
+export const loadAntigravitySdkStatus = loadFileCustraNativeSdkStatus;

@@ -102,7 +102,7 @@ export const TerminalView: React.FC<TerminalViewProps> = ({ scopedFolder }) => {
         {
           id: `obs-${Date.now()}`,
           type: 'OBSERVATION',
-          text: `drwxr-xr-x 2 user staff 4096 Aug 14 22:40 Unorganized/Docs/\n-rw-r--r-- 1 user staff 1542000 Aug 14 22:40 2026_Q3_Financial_Audit.pdf\n-rw-r--r-- 1 user staff 890000 Aug 14 22:40 architecture_diagram.png\n-rw-r--r-- 1 user staff 14500 Aug 14 22:40 sidecar_ipc_handler.py\n-rw-r--r-- 1 user staff 340000 Aug 14 22:40 employee_payroll_2026.xlsx`,
+          text: `Directory listing is not connected in this legacy console view.\nUse Open Workspace to run the backend-backed folder scan for real files in: ${scopedFolder}`,
           timestamp: timeStr,
         }
       );
@@ -111,13 +111,13 @@ export const TerminalView: React.FC<TerminalViewProps> = ({ scopedFolder }) => {
         {
           id: `th-${Date.now()}`,
           type: 'THOUGHT',
-          text: 'Running Google Magika deep learning content-type classification on scoped files...',
+          text: 'Model classification is not connected in this legacy console view. Runtime readiness is checked from the active workspace scan.',
           timestamp: timeStr,
         },
         {
           id: `obs-${Date.now()}`,
           type: 'OBSERVATION',
-          text: '[MAGIKA] 2026_Q3_Financial_Audit.pdf -> application/pdf (score: 0.99)\n[MAGIKA] architecture_diagram.png -> image/png (score: 1.00)\n[MAGIKA] sidecar_ipc_handler.py -> text/x-python (score: 0.98)\n[MAGIKA] employee_payroll_2026.xlsx -> spreadsheet (score: 0.97)',
+          text: '[MODEL] No classification was executed from this console. Run the active Folder Selection scan to inspect real file metadata and model readiness.',
           timestamp: timeStr,
         }
       );
@@ -125,7 +125,7 @@ export const TerminalView: React.FC<TerminalViewProps> = ({ scopedFolder }) => {
       newLogs.push({
         id: `obs-${Date.now()}`,
         type: 'OBSERVATION',
-        text: `Total Directory Size: 4.88 MB across 5 files. Average file size: 998 KB.`,
+        text: `Directory size was not computed in this legacy console view. Use Open Workspace for backend-backed scan totals.`,
         timestamp: timeStr,
       });
     } else if (cmdLower.includes('organize') || cmdLower.includes('plan')) {
@@ -133,13 +133,13 @@ export const TerminalView: React.FC<TerminalViewProps> = ({ scopedFolder }) => {
         {
           id: `th-${Date.now()}`,
           type: 'THOUGHT',
-          text: 'ReAct Agent generating Chain-of-Thought organization plan based on Reinforcement Learning policy rewards...',
+          text: 'Local planner preview requested. Real execution still requires folder scan, dry-run review, and user approval.',
           timestamp: timeStr,
         },
         {
           id: `obs-${Date.now()}`,
           type: 'OBSERVATION',
-          text: '[PROPOSAL] Group 1: Finance/Audits/ (1 file)\n[PROPOSAL] Group 2: Assets/Diagrams/ (1 file)\n[PROPOSAL] Group 3: Engineering/Sidecar/ (1 file)\n[PROPOSAL] Group 4: HR/Payroll/ (1 file)\nDry-run collision status: PASSED (0 path conflicts).',
+          text: '[PREVIEW] Terminal page is not the active execution path. Use Open Workspace to run a real scan and generate backend-backed operations.\nDry-run collision status: not checked in this console.',
           timestamp: timeStr,
         }
       );

@@ -28,10 +28,10 @@ export const Header: React.FC<HeaderProps> = ({ scopedFolder, hardwareDevice, pr
       </div>
 
       <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-        {/* Google Antigravity SDK Status Pill */}
+        {/* FileCustra Native Local SDK Status Pill */}
         <Badge color="cyan" size="md">
-          <Sparkles size={13} />
-          <span>Google Antigravity SDK v0.0.4 Active</span>
+          <ShieldCheck size={13} />
+          <span>FileCustra Native SDK (100% Offline Safe)</span>
         </Badge>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, color: 'var(--text-secondary)' }}>
