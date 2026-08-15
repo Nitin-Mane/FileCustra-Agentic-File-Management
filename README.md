@@ -1,6 +1,16 @@
-# FileCustra — Agentic File Management System
+<div align="center">
 
-> **Private-first, offline-capable, cross-platform agentic file management desktop application** built with Tauri 2, React 19, TypeScript, Vite, custom Prism Material design, Rust safe execution core, SQLite FTS5, and a Python 3.10 sidecar for Google Magika, Tesseract OCR, EmbeddingGemma 300M, and local Gemma AI model reasoning.
+  <img src="assets/filecustra_brand_logo.png" alt="FileCustra Brand Logo" width="650" style="border-radius: 12px; margin-bottom: 16px;" />
+
+  <br />
+
+  <img src="assets/filecustra_3d_splash_logo.png" alt="FileCustra 3D Animated Splash Screen Logo" width="800" style="border-radius: 12px; margin-bottom: 20px;" />
+
+  # FileCustra — Agentic File Management System
+
+  <p><strong>Private-first, offline-capable, cross-platform agentic file management desktop application</strong> built with Tauri 2, React 19, TypeScript, Vite, custom Prism Material design, Rust safe execution core, SQLite FTS5, and a Python 3.10 sidecar for Google Magika, Tesseract OCR, EmbeddingGemma 300M, and local Gemma AI model reasoning.</p>
+
+</div>
 
 ---
 
