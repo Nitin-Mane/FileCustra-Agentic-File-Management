@@ -1,10 +1,6 @@
 <div align="center">
 
-  <img src="assets/filecustra_brand_logo.png" alt="FileCustra Brand Logo" width="650" style="border-radius: 12px; margin-bottom: 16px;" />
-
-  <br />
-
-  <img src="assets/filecustra_3d_splash_logo.png" alt="FileCustra 3D Animated Splash Screen Logo" width="800" style="border-radius: 12px; margin-bottom: 20px;" />
+  <img src="assets/filecustra_brand_logo.png" alt="FileCustra Logo" width="280" style="border-radius: 16px; margin-bottom: 12px;" />
 
   # FileCustra — Agentic File Management System
 
